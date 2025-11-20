@@ -1,0 +1,118 @@
+$minVW: 375px;
+$mediumVW: 768px;
+$maxVW: 1400px;
+
+@function strip-unit($number) {
+  @if type-of($number) == "number" and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}
+
+@function remify($value, $remify: true) {
+  @if $remify {
+    @return #{strip-unit($value) / 16}rem;
+  }
+  @return $value;
+}
+
+
+@function fluid(
+  $startValue,
+  $endValue,
+  $minViewportWidth: $minVW,
+  $maxViewportWidth: $maxVW,
+  $remify: false
+) {
+  $minValue: $startValue;
+  $maxValue: $endValue;
+
+  @if $endValue < $startValue {
+    $minValue: $endValue;
+    $maxValue: $startValue;
+  }
+
+  $additionalSize: #{strip-unit($minViewportWidth) / 100}px;
+  $startSize: remify($startValue, $remify);
+  $endSize: remify($endValue, $remify);
+  $multiplier: (100 * ($endValue - $startValue)) / ($maxViewportWidth - $minViewportWidth);
+  $calc: #{calc(
+      #{$startSize} + ((1vw - #{$additionalSize}) * #{$multiplier})
+    )};
+
+  @return clamp(#{remify($minValue, $remify)}, #{$calc}, #{remify($maxValue, $remify)});
+}
+
+:root {
+  font-size: 1rem;
+  font-family: 'Fira Mono', monospace;
+}
+
+.App {
+  background: #060010;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  font-size: fluid(15px, 24px, $mediumVW, $maxVW);
+}
+
+.App-beams-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.App-content {
+  display: flex;
+  justify-content: space-between;
+  padding-block: fluid(20px, 90px, $mediumVW, $maxVW);
+  padding-inline: fluid(20px, 140px, $mediumVW, $maxVW);
+  z-index: 1;
+
+  @media (max-width: $mediumVW) {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}
+
+.App-content-title {
+  font-size: fluid(24px, 32px, $mediumVW, $maxVW);
+}
+
+.App-content-left {
+  width: 50%;
+  color: white;
+
+  @media (max-width: $mediumVW) {
+    width: 100%;
+  }
+}
+
+.App-content-left-stack {
+  max-width: 70%;
+
+  @media (max-width: $mediumVW) {
+    max-width: 100%;
+  }
+}
+
+.App-content-right {
+  width: 50%;
+  color: white;
+
+  @media (max-width: $mediumVW) {
+    width: 100%;
+  }
+}
+
+.App-content-left-link {
+  margin-block-start: 0;
+  margin-block-end: 5px;
+}
+
+a {
+  color: white;
+}
