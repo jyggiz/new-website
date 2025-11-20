@@ -1,5 +1,4 @@
 import './App.scss';
-import ColorBends from './ColorBends/ColorBends.js';
 import Beams from './Beams/Beams.js';
 
 function App() {
